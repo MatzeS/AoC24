@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <regex>
 #include <iterator>
+#include <array>
 
 int main(int argc, char* argv[]){
     if (argc != 2){
@@ -48,15 +49,45 @@ int main(int argc, char* argv[]){
         auto const length = data[y].size();
         for(uint32_t x = 0; x < length; x++){
 
-            // read forward
-            if(x < length - 4){
-                if(
-                    data[y][x] == 'X' &&
-                    data[y][x] == 'M' &&
-                    data[y][x] == 'A' &&
-                    data[y][x] == 'X'
-                ) {
-                    sum++;
+            std::array<std::array<int, 2>, 8> directions{
+                std::array<int, 2>{ 0,  1},
+                std::array<int, 2>{ 0, -1},
+                std::array<int, 2>{ 1,  0},
+                std::array<int, 2>{-1,  0},
+                std::array<int, 2>{ 1,  1},
+                std::array<int, 2>{-1,  1},
+                std::array<int, 2>{ 1, -1},
+                std::array<int, 2>{-1, -1}
+            };
+
+            auto const word = std::string_view{"XMAS"};
+            assert(word.size() == 4);
+
+            for(auto const direction : directions){
+                int32_t px = x;
+                int32_t py = y;
+
+                // std::cout << "new" << y << "/" << x << std::endl;
+                for(uint8_t i = 0; i < word.size(); i++){
+                    if(word[i] != data.at(py).at(px)){ 
+                        // std::cout << word[i] << "/" << data[y][x] << "  " << py << "/" << px << std::endl;
+                        break;
+                    }
+                    
+                    if(i == word.size() - 1){
+                        sum++;
+                        break;
+                    }
+
+                    py += direction[0];
+                    px += direction[1];
+
+
+                    if(py < 0) break;
+                    if(px < 0) break;
+                    if(py == data.size()) break;
+                    if(px == data[y].size()) break;
+
                 }
             }
 
